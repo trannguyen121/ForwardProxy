@@ -1,0 +1,19 @@
+{
+  "name": "proxy-ip-checker",
+  "version": "1.0.0",
+  "description": "Check public IPs through a list of HTTP proxies",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js"
+  },
+  "dependencies": {
+    "axios": "^1.9.0",
+    "express": "^4.21.2",
+    "http-proxy-agent": "^7.0.2",
+    "https-proxy-agent": "^7.0.6"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}

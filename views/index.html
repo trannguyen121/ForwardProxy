@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Proxy IP Checker & Forwarder</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/ios-checkbox.css">
+  <link rel="stylesheet" href="/buttons.css">
+  <style>
+    body {
+      background-color: #212121;
+      color: #f3f4f6;
+    }
+    tr:hover {
+      background-color: #2d2d2d;
+    }
+    textarea {
+      background-color: #2a2a2a;
+      color: #e5e5e5;
+      border: 1px solid #444;
+    }
+    table {
+      background-color: #2a2a2a;
+    }
+    thead {
+      background-color: #333;
+    }
+    th, td {
+      color: #e0e0e0;
+    }
+  </style>
+  <script>
+    function toggleAll(source) {
+      const checkboxes = document.querySelectorAll('input[name=proxy]');
+      for (const cb of checkboxes) cb.checked = source.checked;
+    }
+    async function recheckSelected() {
+      const selected = Array.from(document.querySelectorAll('input[name=proxy]:checked')).map(cb => cb.value);
+      if (selected.length === 0) return alert('Chọn ít nhất 1 proxy để check lại.');
+      fetch('/recheck', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ indexes: selected })
+      }).then(() => location.reload());
+    }
+  </script>
+</head>
+<body class="p-8">
+  <h1 class="text-2xl font-bold mb-4">Proxy Forwarder (REAL)</h1>
+  <form method="POST" action="/upload">
+    <textarea name="proxies" rows="10" class="w-full p-2 rounded" placeholder="ip:port:user:pass"></textarea>
+    <button class="glow-button mt-2 bg-green-600 text-white px-4 py-2 rounded">Forward</button>
+  </form>
+
+  <form method="get" action="/export-local">
+    <button class="glow-button mt-4 bg-blue-500 text-white px-4 py-2 rounded">⬇ Export Forwarded (Local IP)</button>
+  </form>
+
+  <form method="get" action="/clear">
+    <button class="glow-button mt-2 bg-red-600 text-white px-4 py-2 rounded">🗑 Clear All</button>
+  </form>
+
+  <div class="mt-4 mb-2">
+    <button onclick="recheckSelected()" class="glow-button bg-yellow-500 text-white px-4 py-2 rounded">🔄 Check lại IP các proxy đã chọn</button>
+  </div>
+
+  <table class="table-auto w-full shadow-md mt-4 rounded">
+    <thead>
+      <tr>
+        <th class="px-4 py-2">STT</th>
+        <th class="px-4 py-2 text-center">
+          <label class="ios-checkbox red flex justify-center">
+            <input type="checkbox" onclick="toggleAll(this)">
+            <div class="checkbox-wrapper">
+              <div class="checkbox-bg"></div>
+              <svg viewBox="0 0 24 24" fill="none" class="checkbox-icon">
+                <path d="M5 13l4 4L19 7" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="check-path"/>
+              </svg>
+            </div>
+          </label>
+          <div class="text-xs text-gray-300 mt-1"></div>
+        </th>
+        <th class="px-4 py-2">Proxy Gốc</th>
+        <th class="px-4 py-2">Forward Sang</th>
+        <th class="px-4 py-2">Public IP / Error</th>
+      </tr>
+    </thead>
+    <tbody id="proxy-table">
+${proxyRows}
+<!-- rows will be injected from server -->
+
+    </tbody>
+  </table>
+</body>
+</html>
